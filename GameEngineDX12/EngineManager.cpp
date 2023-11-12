@@ -1,4 +1,5 @@
 #include "EngineManager.h"
+#include <iostream>
 
 EngineManager::EngineManager(HINSTANCE *hInstance) : window(*hInstance) 
 {
@@ -11,6 +12,7 @@ EngineManager::~EngineManager() {
 
 
 void EngineManager::MainLoop() {
+    std::cout << "Main Loop Started" << std::endl;
     // Logique de la boucle principale du jeu
     MSG msg;
     ZeroMemory(&msg, sizeof(MSG));

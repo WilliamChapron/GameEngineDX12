@@ -39,6 +39,9 @@
     <ClInclude Include="EngineManager.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="DirectInitializer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,6 +51,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="EngineManager.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectInitializer.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

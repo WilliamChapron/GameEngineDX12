@@ -1,13 +1,13 @@
 #include "WindowInitializer.h"
+#include "DirectInitializer.h"
 #include <Windows.h>
 
 WindowInitializer::WindowInitializer(HINSTANCE *hInstance, int showWnd, int width, int height, bool fullscreen) : hwnd(nullptr), windowName(L"GameEngineDX12App"), windowTitle(L"GameEngineDX12"), width(width), height(height), fullScreen(fullscreen) {
-    Initialize(*hInstance, showWnd, width, height, fullscreen);
 }
 WindowInitializer::~WindowInitializer() {
 }
 
-bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width, int height, bool fullscreen) {
+bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width, int height, bool fullscreen, DirectInitializer* direct3dInstance) {
     if (fullscreen) {
         HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
         MONITORINFO mi = { sizeof(mi) };
@@ -46,28 +46,14 @@ bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width,
         SetWindowLong(hwnd, GWL_STYLE, 0);
     }
 
+
     ShowWindow(hwnd, showWnd);
     UpdateWindow(hwnd);
 
     return true;
 }
 
-void WindowInitializer::MainLoop() {
-    MSG msg;
-    ZeroMemory(&msg, sizeof(MSG));
 
-    while (true) {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-            if (msg.message == WM_QUIT)
-                break;
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else {
-            // Code du jeu ici
-        }
-    }
-}
 
 LRESULT CALLBACK WindowInitializer::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
@@ -85,3 +71,6 @@ LRESULT CALLBACK WindowInitializer::WndProc(HWND hwnd, UINT msg, WPARAM wParam, 
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
+
+
