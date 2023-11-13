@@ -5,7 +5,7 @@ public:
     DirectInitializer();
     ~DirectInitializer();
 
-    bool Initialize();  
+    //bool Initialize();  
     void Update();      
     void UpdatePipeline();
     void Render();      
@@ -15,12 +15,14 @@ public:
 
     // Get / Set 
 
+    bool CreateDXGIFactory();
+    //IDXGIFactory4* GetDXGIFactory();
+
     //bool CreateDXGIAdapterAndDevice();
     //IDXGIAdapter1* GetDXGIAdapter();
     //ID3D12Device* GetDevice();
 
-    //bool CreateDXGIFactory();
-    //IDXGIFactory4* GetDXGIFactory();
+
 
     //bool CreateSwapChain();
     //IDXGISwapChain3* GetSwapChain();

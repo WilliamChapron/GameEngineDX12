@@ -25,6 +25,7 @@
 
 
 
+#include <iostream>  
 #include <Windows.h>  
 #include "stdafx.h"   
 #include "WindowInitializer.h"
@@ -37,7 +38,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     DirectInitializer* direct3dInstance = new DirectInitializer();
 
     WindowInitializer* windowInstance = new WindowInitializer(&hInstance, nShowCmd, 800, 600, false);
-    windowInstance->Initialize(hInstance, nShowCmd, 800, 600, false, direct3dInstance);
+    windowInstance->Initialize(hInstance, nShowCmd, 1200, 900, false);
 
     EngineManager* engineInstance = new EngineManager(&hInstance);
 
@@ -49,6 +50,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         direct3dInstance->Cleanup();
         return 1;
     }
+
+    bool success = direct3dInstance->CreateDXGIFactory();
+    std::cout << success << std::endl;
+
 
 
     //// we want to wait for the gpu to finish executing the command list before we start releasing everything

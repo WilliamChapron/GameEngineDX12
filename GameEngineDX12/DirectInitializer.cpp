@@ -1,4 +1,5 @@
 #include "DirectInitializer.h"
+#include "iostream"
 
 DirectInitializer::DirectInitializer() {
 }
@@ -6,8 +7,8 @@ DirectInitializer::DirectInitializer() {
 DirectInitializer::~DirectInitializer() {
 }
 
-bool DirectInitializer::Initialize() {
-}
+//bool DirectInitializer::Initialize() {
+//}
 
 void DirectInitializer::Update() {
 }
@@ -25,15 +26,15 @@ void DirectInitializer::WaitForPreviousFrame() {
 
 }
 
-//bool DirectInitializer::CreateDXGIFactory() {
-//    HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
-//    if (FAILED(hr)) {
-//        /*cout << "Failed to create DXGIFactory." << endl;*/
-//        return false;
-//    }
-//    //cout << "Success to create DXGIFactory." << endl;
-//    return true;
-//}
+bool DirectInitializer::CreateDXGIFactory() {
+    HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory));
+    if (FAILED(hr)) {
+        std::cout << "Failed to create DXGIFactory." << std::endl;
+        return false;
+    }
+    std::cout << "Success to create DXGIFactory." << std::endl;
+    return true;
+}
 
 //IDXGIFactory4* DirectInitializer::GetDXGIFactory() {
 //    return _dxgiFactory;

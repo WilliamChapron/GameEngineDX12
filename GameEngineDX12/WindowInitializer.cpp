@@ -7,7 +7,7 @@ WindowInitializer::WindowInitializer(HINSTANCE *hInstance, int showWnd, int widt
 WindowInitializer::~WindowInitializer() {
 }
 
-bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width, int height, bool fullscreen, DirectInitializer* direct3dInstance) {
+bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width, int height, bool fullscreen) {
     if (fullscreen) {
         HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
         MONITORINFO mi = { sizeof(mi) };
