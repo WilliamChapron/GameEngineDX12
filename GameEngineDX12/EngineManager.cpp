@@ -27,16 +27,7 @@ EngineManager::~EngineManager() {
 }
 
 void EngineManager::Initialize() {
-    direct3dInstance = new DirectInitializer();
-
-
-
-    if (!direct3dInstance) {
-        std::cout << "DirectX 3d Instance not initialized correctly" << std::endl;
-        /*MessageBox(0, L"Failed to initialize direct3d 12", L"Error", MB_OK);*/
-        direct3dInstance->Cleanup();
-        PostQuitMessage(1); 
-    }
+   
     windowInstance = new WindowInitializer(hInstance, nShowCmd, 800, 600, false);
     if (!windowInstance) {
         std::cout << "Windows Instance not initialized correctly" << std::endl;
@@ -44,9 +35,15 @@ void EngineManager::Initialize() {
     }
     windowInstance->Initialize(hInstance, nShowCmd, 1200, 900, false);
 
+    direct3dInstance = new DirectInitializer();
+    if (!direct3dInstance) {
+        std::cout << "DirectX 3d Instance not initialized correctly" << std::endl;
+        /*MessageBox(0, L"Failed to initialize direct3d 12", L"Error", MB_OK);*/
+        direct3dInstance->Cleanup();
+        PostQuitMessage(1);
+    }
+    direct3dInstance->Initialize();
 
-    direct3dInstance->CreateDXGIFactory();
-    direct3dInstance->CreateDXGIAdapterAndDevice();
 
 
 }

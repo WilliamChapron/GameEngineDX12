@@ -5,7 +5,7 @@ public:
     DirectInitializer();
     ~DirectInitializer();
 
-    //bool Initialize();  
+    void Initialize();  
     void Update();      
     void UpdatePipeline();
     void Render();      
@@ -19,16 +19,16 @@ public:
     IDXGIFactory4* GetDXGIFactory();
 
     bool CreateDXGIAdapterAndDevice();
-    //IDXGIAdapter1* GetDXGIAdapter();
-    //ID3D12Device* GetDevice();
+    IDXGIAdapter1* GetDXGIAdapter();
+    ID3D12Device* GetDevice();
 
+    bool CreateCommandQueue();
+    ID3D12CommandQueue* GetCommandQueue();
 
 
     //bool CreateSwapChain();
     //IDXGISwapChain3* GetSwapChain();
 
-    //bool CreateCommandQueue();
-    //ID3D12CommandQueue* GetCommandQueue();
 
     //bool CreateDescriptorHeap();
     //ID3D12DescriptorHeap* GetDescriptorHeap();

@@ -17,13 +17,19 @@ DirectInitializer::DirectInitializer() :
         _commandAllocator[i] = nullptr;
         _fence[i] = nullptr;
     }
+
 }
 
-DirectInitializer::~DirectInitializer() {
+DirectInitializer::~DirectInitializer() 
+{
+
 }
 
-//bool DirectInitializer::Initialize() {
-//}
+void DirectInitializer::Initialize() {
+    CreateDXGIFactory();
+    CreateDXGIAdapterAndDevice();
+    CreateCommandQueue();
+}
 
 void DirectInitializer::Update() {
 }
@@ -47,7 +53,10 @@ bool DirectInitializer::CreateDXGIFactory() {
         std::cout << "Failed to create DXGIFactory." << std::endl;
         return false;
     }
-    std::cout << "Success to create DXGIFactory." << std::endl;
+    if (_dxgiFactory != nullptr) {
+        std::cout << "Success to create DXGIFactory." << std::endl;
+    }
+
     return true;
 }
 
@@ -63,8 +72,8 @@ bool DirectInitializer::CreateDXGIAdapterAndDevice() {
         DXGI_ADAPTER_DESC1 desc;
         _dxgiAdapter->GetDesc1(&desc);
 
+        // If Software adapter, move to the next one
         if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
-            // Software adapter, move to the next one
             adapterIndex++;
             continue;
         }
@@ -78,55 +87,69 @@ bool DirectInitializer::CreateDXGIAdapterAndDevice() {
             reinterpret_cast<void**>(&_device)
         );
 
-        if (_dxgiAdapter != nullptr) {
-            std::cout << "dxgiAdapter" << std::endl;
-        }
-
-        if (FAILED(hr)) {
-            // Display an error message
-            std::cout << "Failed to create D3D12 device." << std::endl;
-            return false;
-        }
-
-        if (SUCCEEDED(hr)) {
-            // Display a success message
-            std::cout << "D3D12 device created successfully." << std::endl;
+        // Device Creation State
+        if (SUCCEEDED(hr) && _device != nullptr) {
+            std::cout << "Success to create D3D12 device." << std::endl;
             adapterFound = true;
             break;
         }
-
+        if (FAILED(hr) || _device == nullptr) {
+            std::cout << "Failed to create D3D12 device / continue try find other adapter" << std::endl;
+        }
         adapterIndex++;
     }
 
-    if (!adapterFound) {
-        // Display a message indicating that no suitable adapter was found
-        std::cout << "No suitable DXGI adapter found." << std::endl;
+    // Adapter Creation State
+    if (_dxgiAdapter != nullptr) {
+        std::cout << "Success to find and store DXGIAdapter." << std::endl;
+    }
+    else {
+        std::cout << "Failed to find DXGI adapter." << std::endl;
         return false;
     }
 
     return true;
 }
 
-//IDXGIAdapter1* DirectInitializer::GetDXGIAdapter() {
-//    return _dxgiAdapter;
-//}
+IDXGIAdapter1* DirectInitializer::GetDXGIAdapter() {
+    return _dxgiAdapter;
+}
+
+ID3D12Device* DirectInitializer::GetDevice() {
+	return _device;
+}
+
+bool DirectInitializer::CreateCommandQueue() 
+{
+    // Command Queue Description
+    D3D12_COMMAND_QUEUE_DESC cqDesc = {}; // default values
+
+    HRESULT hr = _device->CreateCommandQueue(&cqDesc, IID_PPV_ARGS(&_commandQueue)); 
+    if (FAILED(hr) || _commandQueue == nullptr)
+    {
+        std::cout << "Failed to create Device Command Queue." << std::endl;
+        return false;
+    }
+    if (SUCCEEDED(hr) && _commandQueue != nullptr)
+    {
+        std::cout << "Success to create Device Command Queue." << std::endl;
+        return true;
+    }
+}
+
+ID3D12CommandQueue* DirectInitializer::GetCommandQueue() {
+    return _commandQueue;
+}
+
+
+
+
+//bool DirectInitializer::CreateSwapChain() 
+//{
 //
-//
-//
-//ID3D12Device* DirectInitializer::GetDevice() {
-//	/*return _device;*/
-//}
-//
-//bool DirectInitializer::CreateSwapChain() {
 //}
 //
 //IDXGISwapChain3* DirectInitializer::GetSwapChain() {
-//}
-//
-//bool DirectInitializer::CreateCommandQueue() {
-//}
-//
-//ID3D12CommandQueue* DirectInitializer::GetCommandQueue() {
 //}
 //
 //bool DirectInitializer::CreateDescriptorHeap() {
