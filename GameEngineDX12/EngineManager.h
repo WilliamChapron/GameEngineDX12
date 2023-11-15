@@ -2,25 +2,15 @@
 
 #pragma once
 
-class DirectInitializer;
-class WindowInitializer;
 #include <Windows.h>
 #include <iostream>
 
-class EngineManager {
-public:
-    EngineManager(HINSTANCE* hInstance, int nShowCmd);
-    ~EngineManager();
+namespace EngineManager {
+    extern HINSTANCE* _hInstance;
+    extern int _nShowCmd;
+    extern FILE* _pConsole;
 
-    void Initialize();
+    void Initialize(HINSTANCE* hInstance, int nShowCmd);
     void Cleanup();
     void MainLoop();
-
-private:
-    HINSTANCE* hInstance;
-    int nShowCmd;
-    DirectInitializer* direct3dInstance;
-    WindowInitializer* windowInstance;
-    FILE* pConsole;
-};
-
+}
