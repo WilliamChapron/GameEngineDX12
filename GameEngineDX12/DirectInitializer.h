@@ -22,18 +22,16 @@ namespace DirectInitializer {
     ID3D12CommandQueue* GetCommandQueue();
 
 
-    //bool CreateSwapChain();
-    //IDXGISwapChain3* GetSwapChain();
+    bool CreateSwapChain();
+    IDXGISwapChain3* GetSwapChain();
 
 
-    //bool CreateDescriptorHeap();
-    //ID3D12DescriptorHeap* GetDescriptorHeap();
+    bool CreateDescriptorHeapAndRenderTargets();
+    ID3D12DescriptorHeap* GetDescriptorHeap();
+    ID3D12Resource* GetRenderTarget(int index);
 
-    //bool CreateRenderTarget(int index);
-    //ID3D12Resource* GetRenderTarget(int index);
-
-    //bool CreateCommandAllocator(int index);
-    //ID3D12CommandAllocator* GetCommandAllocator(int index);
+    bool CreateCommandAllocators();
+    ID3D12CommandAllocator* GetCommandAllocator(int index);
 
     //bool CreateCommandList();
     //ID3D12GraphicsCommandList* GetCommandList();
@@ -50,7 +48,7 @@ namespace DirectInitializer {
     //int GetRtvDescriptorSize();
 
 
-    const int _frameBufferCount = 3;; // number of buffers we want, 2 for double buffering, 3 for tripple buffering
+    constexpr int _frameBufferCount = 3; // number of buffers we want, 2 for double buffering, 3 for tripple buffering
 
     extern IDXGIAdapter1* _dxgiAdapter;// Adapter graphics cards, we will be able to communicate with
 
@@ -66,16 +64,16 @@ namespace DirectInitializer {
 
     extern ID3D12Resource* _renderTargets[_frameBufferCount]; // number of render targets equal to buffer count
 
-    extern ID3D12CommandAllocator* _commandAllocator[_frameBufferCount]; // we want enough allocators for each buffer * number of threads (we only have one thread)
+    extern ID3D12CommandAllocator* _commandAllocators[_frameBufferCount]; // we want enough allocators for each buffer * number of threads (we only have one thread)
 
     extern ID3D12GraphicsCommandList* _commandList; // a command list we can record commands into, then execute them to render the frame
 
-    extern ID3D12Fence* _fence[_frameBufferCount];    // an object that is locked while our command list is being executed by the gpu. We need as many 
+    extern ID3D12Fence* _fences[_frameBufferCount];    // an object that is locked while our command list is being executed by the gpu. We need as many 
     //as we have allocators (more if we want to know when the gpu is finished with an asset)
 
     extern HANDLE _fenceEvent; // a handle to an event when our fence is unlocked by the gpu
 
-    extern UINT64 _fenceValue[_frameBufferCount]; // this value is incremented each frame. each fence will have its own value
+    extern UINT64 _fenceValues[_frameBufferCount]; // this value is incremented each frame. each fence will have its own value
 
     extern int _frameIndex; // current rtv we are on
 

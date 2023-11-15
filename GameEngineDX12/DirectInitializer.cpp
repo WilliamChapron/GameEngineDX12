@@ -1,4 +1,6 @@
 #include "DirectInitializer.h"
+#include "WindowInitializer.h"
+#include "EngineManager.h"
 #include <iostream>
 
 
@@ -10,7 +12,7 @@ namespace DirectInitializer {
     ID3D12CommandQueue* _commandQueue = nullptr;
     ID3D12DescriptorHeap* _rtvDescriptorHeap = nullptr;
     ID3D12Resource* _renderTargets[_frameBufferCount];
-    ID3D12CommandAllocator* _commandAllocator[_frameBufferCount];
+    ID3D12CommandAllocator* _commandAllocators[_frameBufferCount];
     ID3D12GraphicsCommandList* _commandList = nullptr;
     ID3D12Fence* _fence[_frameBufferCount];
     HANDLE _fenceEvent = nullptr;
@@ -22,14 +24,16 @@ namespace DirectInitializer {
     void DirectInitializer::Initialize() {
         for (int i = 0; i < _frameBufferCount; ++i) {
             _renderTargets[i] = nullptr;
-            _commandAllocator[i] = nullptr;
-            _fence[i] = nullptr;
+            _commandAllocators[i] = nullptr;
         }
 
 
         CreateDXGIFactory();
         CreateDXGIAdapterAndDevice();
         CreateCommandQueue();
+        CreateSwapChain();
+        CreateDescriptorHeapAndRenderTargets();
+        CreateCommandAllocators();
     }
 
     void DirectInitializer::Update() {
@@ -136,76 +140,163 @@ namespace DirectInitializer {
             std::cout << "Success to create Device Command Queue." << std::endl;
             return true;
         }
+        return true;
     }
 
     ID3D12CommandQueue* DirectInitializer::GetCommandQueue() {
         return _commandQueue;
+    }
+
+    bool DirectInitializer::CreateSwapChain()
+    {
+
+
+        DXGI_MODE_DESC backBufferDesc = {};
+        backBufferDesc.Width = WindowInitializer::_width;
+        backBufferDesc.Height = WindowInitializer::_height;
+        backBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+
+        DXGI_SAMPLE_DESC sampleDesc = {};
+        sampleDesc.Count = 1; 
+
+
+        DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+        swapChainDesc.BufferCount = _frameBufferCount; 
+        swapChainDesc.BufferDesc = backBufferDesc; 
+        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; 
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; 
+        swapChainDesc.OutputWindow = WindowInitializer::_hwnd; 
+        swapChainDesc.SampleDesc = sampleDesc; 
+        swapChainDesc.Windowed = !WindowInitializer::_fullScreen; 
+
+        IDXGISwapChain* tempSwapChain;
+
+        _dxgiFactory->CreateSwapChain(
+            _commandQueue, 
+            &swapChainDesc, 
+            &tempSwapChain 
+        );
+
+        _swapChain = static_cast<IDXGISwapChain3*>(tempSwapChain);
+
+
+
+        if (_swapChain == nullptr)
+        {
+            std::cout << "Failed to create Device Swap Chain." << std::endl;
+            return false;
+        }
+        if (_swapChain != nullptr)
+        {
+            _frameIndex = _swapChain->GetCurrentBackBufferIndex();
+
+            std::cout << "Success to create Device Swap Chain." << std::endl;
+            return true;
+        }
+        return true;
+    }
+
+    IDXGISwapChain3* DirectInitializer::GetSwapChain() 
+    {
+        return _swapChain;
+    }
+
+    bool DirectInitializer::CreateDescriptorHeapAndRenderTargets() 
+    {
+        
+        // Creating 3 descriptors
+        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+        rtvHeapDesc.NumDescriptors = _frameBufferCount; 
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV; 
+
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        HRESULT hr = _device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&_rtvDescriptorHeap));
+
+
+        if (_rtvDescriptorHeap == nullptr || FAILED(hr))
+        {
+            return false;
+            std::cout << "Failed to create Descriptor Heap." << std::endl;
+        }
+        if (_rtvDescriptorHeap != nullptr && SUCCEEDED(hr))
+        {
+            std::cout << "Success to create Descriptor Heap." << std::endl;
+        }
+
+
+        _rtvDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()); 
+
+        for (int i = 0; i < _frameBufferCount; i++)
+        {
+            HRESULT hr = _swapChain->GetBuffer(i, IID_PPV_ARGS(&_renderTargets[i]));
+
+            if (_renderTargets[i] == nullptr || FAILED(hr))
+            {
+                return false;
+                std::cout << "Failed to create the Render Target number " << i+1 << " on " << _frameBufferCount  << std::endl;
+            }
+            if (_renderTargets[i] != nullptr && SUCCEEDED(hr))
+            {
+                std::cout << "Success to create the Render Target number " << i+1 << " on " << _frameBufferCount << std::endl;
+            }
+
+            _device->CreateRenderTargetView(_renderTargets[i], nullptr, rtvHandle);
+
+            rtvHandle.Offset(1, _rtvDescriptorSize);
+        }
+        return true;
+
+    }
+    
+    ID3D12DescriptorHeap* DirectInitializer::GetDescriptorHeap() 
+    {
+        return _rtvDescriptorHeap;
+    }
+
+    ID3D12Resource* DirectInitializer::GetRenderTarget(int index)
+    {
+        return _renderTargets[index];
+    }
+
+    bool DirectInitializer::CreateCommandAllocators() 
+    {
+        for (int i = 0; i < _frameBufferCount; i++)
+        {
+            HRESULT hr = _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocators[i]));
+            if (FAILED(hr) || _commandAllocators[i] == nullptr)
+            {
+                std::cout << "Failed to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
+                return false;
+
+            }
+            if (SUCCEEDED(hr) || _commandAllocators[i] != nullptr)
+            {
+                std::cout << "Success to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
+            }
+        }
+        return true;
+    }
+
+    ID3D12CommandAllocator* DirectInitializer::GetCommandAllocator(int index) 
+    {
+        return _commandAllocators[index];
     }
 }
 
 
 
 
-//bool DirectInitializer::CreateSwapChain() 
-//{
-//    //// -- Create the Swap Chain (double/tripple buffering) -- //
-//
-//    //DXGI_MODE_DESC backBufferDesc = {}; // this is to describe our display mode
-//    //backBufferDesc.Width = Width; // buffer width
-//    //backBufferDesc.Height = Height; // buffer height
-//    //backBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // format of the buffer (rgba 32 bits, 8 bits for each chanel)
-//
-//    //// describe our multi-sampling. We are not multi-sampling, so we set the count to 1 (we need at least one sample of course)
-//    //DXGI_SAMPLE_DESC sampleDesc = {};
-//    //sampleDesc.Count = 1; // multisample count (no multisampling, so we just put 1, since we still need 1 sample)
-//
-//    //// Describe and create the swap chain.
-//    //DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-//    //swapChainDesc.BufferCount = frameBufferCount; // number of buffers we have
-//    //swapChainDesc.BufferDesc = backBufferDesc; // our back buffer description
-//    //swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // this says the pipeline will render to this swap chain
-//    //swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // dxgi will discard the buffer (data) after we call present
-//    //swapChainDesc.OutputWindow = hwnd; // handle to our window
-//    //swapChainDesc.SampleDesc = sampleDesc; // our multi-sampling description
-//    //swapChainDesc.Windowed = !FullScreen; // set to true, then if in fullscreen must call SetFullScreenState with true for full screen to get uncapped fps
-//
-//    //IDXGISwapChain* tempSwapChain;
-//
-//    //dxgiFactory->CreateSwapChain(
-//    //    commandQueue, // the queue will be flushed once the swap chain is created
-//    //    &swapChainDesc, // give it the swap chain description we created above
-//    //    &tempSwapChain // store the created swap chain in a temp IDXGISwapChain interface
-//    //);
-//
-//    //swapChain = static_cast<IDXGISwapChain3*>(tempSwapChain);
-//
-//    //frameIndex = swapChain->GetCurrentBackBufferIndex();
-//}
-
-//IDXGISwapChain3* DirectInitializer::GetSwapChain() 
-//{
-//
-//}
 
 
-//
-//bool DirectInitializer::CreateDescriptorHeap() {
-//}
-//
-//ID3D12DescriptorHeap* DirectInitializer::GetDescriptorHeap() {
-//}
-//
-//bool DirectInitializer::CreateRenderTarget(int index) {
-//}
-//
-//ID3D12Resource* DirectInitializer::GetRenderTarget(int index) {
-//}
-//
-//bool DirectInitializer::CreateCommandAllocator(int index) {
-//}
-//
-//ID3D12CommandAllocator* DirectInitializer::GetCommandAllocator(int index) {
-//}
+
+
+
+
+
+
 //
 //bool DirectInitializer::CreateCommandList() {
 //}
