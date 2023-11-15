@@ -6,7 +6,7 @@ namespace DirectInitializer {
     void UpdatePipeline();
     void Render();      
     void Cleanup();
-    void WaitForPreviousFrame();
+    void WaitForPreviousFrame();d
 
 
     // Get / Set 
