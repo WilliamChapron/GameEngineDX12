@@ -1,5 +1,5 @@
 #include "DirectInitializer.h"
-#include "iostream"
+#include <iostream>
 
 DirectInitializer::DirectInitializer() {
 }
@@ -36,56 +36,57 @@ bool DirectInitializer::CreateDXGIFactory() {
     return true;
 }
 
-//IDXGIFactory4* DirectInitializer::GetDXGIFactory() {
-//    return _dxgiFactory;
-//}
+IDXGIFactory4* DirectInitializer::GetDXGIFactory() {
+    return _dxgiFactory;
+}
 
-//bool DirectInitializer::CreateDXGIAdapterAndDevice() {
-//    int adapterIndex = 0;
-//    bool adapterFound = false;
-//
-//    while (_dxgiFactory->EnumAdapters1(adapterIndex, &_dxgiAdapter) != DXGI_ERROR_NOT_FOUND) {
-//        DXGI_ADAPTER_DESC1 desc;
-//        _dxgiAdapter->GetDesc1(&desc);
-//
-//        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
-//            // Software adapter, move to the next one
-//            adapterIndex++;
-//            continue;
-//        }
-//
-//        // Test if the device is compatible with the required version
-//        hr = D3D12CreateDevice(
-//            _dxgiAdapter,
-//            D3D_FEATURE_LEVEL_11_0,
-//            _uuidof(ID3D12Device),
-//            reinterpret_cast<void**>(&device)
-//        );
-//
-//        if (FAILED(hr)) {
-//            // Display an error message
-//            cout << "Failed to create D3D12 device." << endl;
-//            return false;
-//        }
-//
-//        if (SUCCEEDED(hr)) {
-//            // Display a success message
-//            cout << "D3D12 device created successfully." << endl;
-//            adapterFound = true;
-//            break;
-//        }
-//
-//        adapterIndex++;
-//    }
-//
-//    if (!adapterFound) {
-//        // Display a message indicating that no suitable adapter was found
-//        cout << "No suitable DXGI adapter found." << endl;
-//        return false;
-//    }
-//
-//    return true;
-//}
+bool DirectInitializer::CreateDXGIAdapterAndDevice() {
+    int adapterIndex = 0;
+    bool adapterFound = false;
+
+    while (_dxgiFactory->EnumAdapters1(adapterIndex, &_dxgiAdapter) != DXGI_ERROR_NOT_FOUND) {
+        DXGI_ADAPTER_DESC1 desc;
+        _dxgiAdapter->GetDesc1(&desc);
+
+        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
+            // Software adapter, move to the next one
+            adapterIndex++;
+            continue;
+        }
+
+        // Test if the device is compatible with the required version
+        HRESULT hr = 
+            D3D12CreateDevice(
+            _dxgiAdapter,
+            D3D_FEATURE_LEVEL_11_0,
+            _uuidof(ID3D12Device),
+            reinterpret_cast<void**>(&_device)
+        );
+
+        if (FAILED(hr)) {
+            // Display an error message
+            std::cout << "Failed to create D3D12 device." << std::endl;
+            return false;
+        }
+
+        if (SUCCEEDED(hr)) {
+            // Display a success message
+            std::cout << "D3D12 device created successfully." << std::endl;
+            adapterFound = true;
+            break;
+        }
+
+        adapterIndex++;
+    }
+
+    if (!adapterFound) {
+        // Display a message indicating that no suitable adapter was found
+        std::cout << "No suitable DXGI adapter found." << std::endl;
+        return false;
+    }
+
+    return true;
+}
 
 //IDXGIAdapter1* DirectInitializer::GetDXGIAdapter() {
 //    return _dxgiAdapter;

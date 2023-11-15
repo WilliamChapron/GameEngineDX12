@@ -45,11 +45,10 @@ void EngineManager::Initialize() {
     windowInstance->Initialize(hInstance, nShowCmd, 1200, 900, false);
 
 
-    //bool success = direct3dInstance->CreateDXGIFactory();
+    direct3dInstance->CreateDXGIFactory();
+    direct3dInstance->CreateDXGIAdapterAndDevice();
 
-    //if (success) {
-    //    std::cout << success << std::endl;
-    //}
+
 }
 
 void EngineManager::Cleanup() {

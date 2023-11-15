@@ -33,7 +33,7 @@
 #include "EngineManager.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-    /*EngineManager* engineInstance = new EngineManager(&hInstance, nShowCmd);*/
+    EngineManager* engineInstance = new EngineManager(&hInstance, nShowCmd);
 
     // Ferme la console avant la fin du programme
     /*engineInstance->Cleanup();

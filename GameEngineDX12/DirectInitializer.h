@@ -16,9 +16,9 @@ public:
     // Get / Set 
 
     bool CreateDXGIFactory();
-    //IDXGIFactory4* GetDXGIFactory();
+    IDXGIFactory4* GetDXGIFactory();
 
-    //bool CreateDXGIAdapterAndDevice();
+    bool CreateDXGIAdapterAndDevice();
     //IDXGIAdapter1* GetDXGIAdapter();
     //ID3D12Device* GetDevice();
 
