@@ -7,7 +7,7 @@ WindowInitializer::WindowInitializer(HINSTANCE *hInstance, int showWnd, int widt
 WindowInitializer::~WindowInitializer() {
 }
 
-bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width, int height, bool fullscreen) {
+bool WindowInitializer::Initialize(HINSTANCE *hInstance, int showWnd, int width, int height, bool fullscreen) {
     if (fullscreen) {
         HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
         MONITORINFO mi = { sizeof(mi) };
@@ -22,7 +22,7 @@ bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width,
     wc.lpfnWndProc = WndProc;
     wc.cbClsExtra = NULL;
     wc.cbWndExtra = NULL;
-    wc.hInstance = hInstance;
+    wc.hInstance = (*hInstance);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
@@ -35,7 +35,7 @@ bool WindowInitializer::Initialize(HINSTANCE &hInstance, int showWnd, int width,
         return false;
     }
 
-    hwnd = CreateWindowEx(NULL, windowName, windowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hInstance, NULL);
+    hwnd = CreateWindowEx(NULL, windowName, windowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, (*hInstance), NULL);
 
     if (!hwnd) {
         MessageBox(NULL, L"Erreur de création de la fenêtre", L"Erreur", MB_OK | MB_ICONERROR);
