@@ -1,7 +1,22 @@
 #include "DirectInitializer.h"
 #include <iostream>
 
-DirectInitializer::DirectInitializer() {
+DirectInitializer::DirectInitializer() :
+    _dxgiAdapter(nullptr),
+    _dxgiFactory(nullptr),
+    _device(nullptr),
+    _swapChain(nullptr),
+    _commandQueue(nullptr),
+    _rtvDescriptorHeap(nullptr),
+    _commandList(nullptr),
+    _fenceEvent(nullptr)
+{
+    // Initialisation des tableaux à nullptr
+    for (int i = 0; i < _frameBufferCount; ++i) {
+        _renderTargets[i] = nullptr;
+        _commandAllocator[i] = nullptr;
+        _fence[i] = nullptr;
+    }
 }
 
 DirectInitializer::~DirectInitializer() {
@@ -62,6 +77,10 @@ bool DirectInitializer::CreateDXGIAdapterAndDevice() {
             _uuidof(ID3D12Device),
             reinterpret_cast<void**>(&_device)
         );
+
+        if (_dxgiAdapter != nullptr) {
+            std::cout << "dxgiAdapter" << std::endl;
+        }
 
         if (FAILED(hr)) {
             // Display an error message

@@ -61,7 +61,7 @@ private:
 
     static const int _frameBufferCount = 3;; // number of buffers we want, 2 for double buffering, 3 for tripple buffering
 
-    IDXGIAdapter1* _dxgiAdapter; // Adapter graphics cards, we will be able to communicate with
+    IDXGIAdapter1* _dxgiAdapter;// Adapter graphics cards, we will be able to communicate with
 
     IDXGIFactory4* _dxgiFactory; // Instance creator for dxgi objects
 
