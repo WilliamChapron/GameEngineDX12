@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DirectInitializer.h" />
+    <ClInclude Include="DirectManager.h" />
     <ClInclude Include="EngineManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="main.h" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectInitializer.cpp" />
+    <ClCompile Include="DirectManager.cpp" />
     <ClCompile Include="EngineManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowInitializer.cpp" />

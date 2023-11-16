@@ -14,9 +14,9 @@ namespace DirectInitializer {
     ID3D12Resource* _renderTargets[_frameBufferCount];
     ID3D12CommandAllocator* _commandAllocators[_frameBufferCount];
     ID3D12GraphicsCommandList* _commandList = nullptr;
-    ID3D12Fence* _fence[_frameBufferCount];
+    ID3D12Fence* _fences[_frameBufferCount];
     HANDLE _fenceEvent = nullptr;
-    UINT64 _fenceValue[_frameBufferCount];
+    UINT64 _fencesValue[_frameBufferCount];
     int _frameIndex = 0;
     int _rtvDescriptorSize = 0;
 
@@ -34,22 +34,8 @@ namespace DirectInitializer {
         CreateSwapChain();
         CreateDescriptorHeapAndRenderTargets();
         CreateCommandAllocators();
-    }
-
-    void DirectInitializer::Update() {
-    }
-
-    void DirectInitializer::UpdatePipeline() {
-    }
-
-    void DirectInitializer::Render() {
-    }
-
-    void DirectInitializer::Cleanup() {
-    }
-
-    void DirectInitializer::WaitForPreviousFrame() {
-
+        CreateCommandList();
+        CreateFencesAndFenceEvent();
     }
 
     bool DirectInitializer::CreateDXGIFactory() {
@@ -272,7 +258,7 @@ namespace DirectInitializer {
                 return false;
 
             }
-            if (SUCCEEDED(hr) || _commandAllocators[i] != nullptr)
+            if (SUCCEEDED(hr) && _commandAllocators[i] != nullptr)
             {
                 std::cout << "Success to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
             }
@@ -283,6 +269,60 @@ namespace DirectInitializer {
     ID3D12CommandAllocator* DirectInitializer::GetCommandAllocator(int index) 
     {
         return _commandAllocators[index];
+    }
+
+    
+    bool DirectInitializer::CreateCommandList() 
+    {
+        HRESULT hr = _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocators[0], NULL, IID_PPV_ARGS(&_commandList));
+        if (FAILED(hr) || _commandList == nullptr)
+        {
+            std::cout << "Failed to create the Command List"<< std::endl;
+            return false;
+
+        }
+        if (SUCCEEDED(hr) && _commandList != nullptr)
+        {
+            std::cout << "Success to create the Command List" << std::endl;
+        }
+    }
+    
+    ID3D12GraphicsCommandList* DirectInitializer::GetCommandList() 
+    {
+        return _commandList;
+    }
+
+    bool CreateFencesAndFenceEvent() 
+    {
+        for (int i = 0; i < _frameBufferCount; i++)
+        {
+            HRESULT hr = _device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fences[i]));
+            if (FAILED(hr) || _fences[i] == nullptr)
+            {
+                std::cout << "Failed to create the Fence number " << i + 1 << " on " << _frameBufferCount << std::endl;
+                return false;
+
+            }
+            if (SUCCEEDED(hr) || _fences[i] != nullptr)
+            {
+                std::cout << "Success to create the Fence number " << i + 1 << " on " << _frameBufferCount << std::endl;
+            }
+            _fencesValue[i] = 0; // set the initial fence value to 0
+        }
+
+        // create a handle to a fence event from WIN API 
+        _fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        if (_fenceEvent == nullptr)
+        {
+            std::cout << "Failed to create the Fence Event" << std::endl;
+            return false;
+        }
+        if (_fenceEvent != nullptr)
+        {
+            std::cout << "Success to create the Fence Event" << std::endl;
+        }
+
+        return true;
     }
 }
 
@@ -297,16 +337,7 @@ namespace DirectInitializer {
 
 
 
-//
-//bool DirectInitializer::CreateCommandList() {
-//}
-//
-//ID3D12GraphicsCommandList* DirectInitializer::GetCommandList() {
-//}
-//
-//bool DirectInitializer::CreateFence(int index) {
-//}
-//
+
 //ID3D12Fence* DirectInitializer::GetFence(int index) {
 //}
 //
