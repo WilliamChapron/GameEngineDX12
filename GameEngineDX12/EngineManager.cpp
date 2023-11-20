@@ -31,7 +31,7 @@ namespace EngineManager {
         // Init DirectX Manager
 
         
-        if (success)
+        if (!success)
         {
             std::cout << "Failed to initialize DirectX instances" << std::endl;
             // Can see error 
@@ -64,6 +64,7 @@ namespace EngineManager {
             }
             else {
                 DirectManager::Render();
+                Sleep(1000);
             }
         }
     }

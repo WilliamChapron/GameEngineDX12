@@ -298,6 +298,7 @@ namespace DirectInitializer {
         {
             std::cout << "Success to create the Command List" << std::endl;
         }
+        return true;
     }
     
     ID3D12GraphicsCommandList* DirectInitializer::GetCommandList() 

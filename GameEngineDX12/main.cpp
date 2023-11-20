@@ -35,10 +35,6 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
     EngineManager::Initialize(&hInstance, nShowCmd);
 
-    // Ferme la console avant la fin du programme
-    /*engineInstance->Cleanup();
-    
-    delete engineInstance;*/
     return 0;
 }
 
