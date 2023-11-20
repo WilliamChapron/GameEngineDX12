@@ -20,22 +20,35 @@ namespace DirectInitializer {
     int _frameIndex = 0;
     int _rtvDescriptorSize = 0;
 
+    void DirectInitializer::Destructor()
+    {
+        // Destroy Instance
+    }
 
-    void DirectInitializer::Initialize() {
+
+    bool DirectInitializer::Initialize() {
         for (int i = 0; i < _frameBufferCount; ++i) {
             _renderTargets[i] = nullptr;
             _commandAllocators[i] = nullptr;
         }
 
 
-        CreateDXGIFactory();
-        CreateDXGIAdapterAndDevice();
-        CreateCommandQueue();
-        CreateSwapChain();
-        CreateDescriptorHeapAndRenderTargets();
-        CreateCommandAllocators();
-        CreateCommandList();
-        CreateFencesAndFenceEvent();
+        // If one instance don't init correctly, end program
+        bool success;
+        success = CreateDXGIFactory();
+        success =  CreateDXGIAdapterAndDevice();
+        success = CreateCommandQueue();
+        success = CreateSwapChain();
+        success = CreateDescriptorHeapAndRenderTargets();
+        success = CreateCommandAllocators();
+        success = CreateCommandList();
+        success = CreateFencesAndFenceEvent();
+
+        if (!success) return false;
+
+        return true;
+
+        
     }
 
     bool DirectInitializer::CreateDXGIFactory() {
@@ -324,6 +337,31 @@ namespace DirectInitializer {
 
         return true;
     }
+
+    ID3D12Fence* DirectInitializer::GetFence(int index) 
+    {
+        return _fences[index];
+    }
+
+    HANDLE DirectInitializer::GetFenceEvent() 
+    {
+        return _fenceEvent;
+    }
+
+    
+    UINT64 DirectInitializer::GetFenceValue(int index) 
+    {
+        return _fencesValue[index];
+    }
+
+    int DirectInitializer::GetFrameIndex() {
+        return _frameIndex;
+    }
+
+    int DirectInitializer::GetRtvDescriptorSize() 
+    {
+        return _rtvDescriptorSize;
+    }
 }
 
 
@@ -338,20 +376,5 @@ namespace DirectInitializer {
 
 
 
-//ID3D12Fence* DirectInitializer::GetFence(int index) {
-//}
-//
-//HANDLE DirectInitializer::CreateFenceEvent() {
-//}
-//
-//HANDLE DirectInitializer::GetFenceEvent() {
-//}
-//
-//UINT64 DirectInitializer::GetFenceValue(int index) {
-//}
-//
-//int DirectInitializer::GetFrameIndex() {
-//}
-//
-//int DirectInitializer::GetRtvDescriptorSize() {
-//}
+
+

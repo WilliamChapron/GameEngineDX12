@@ -1,5 +1,6 @@
 #include "EngineManager.h"
 #include "DirectInitializer.h"
+#include "DirectManager.h"
 #include "WindowInitializer.h"
 
 namespace EngineManager {
@@ -22,8 +23,21 @@ namespace EngineManager {
             PostQuitMessage(1);
         }
 
+        // Init window
         WindowInitializer::Initialize(hInstance, nShowCmd, 1200, 900, false);
-        DirectInitializer::Initialize();
+        // Init DirectX Instances
+        bool success = DirectInitializer::Initialize();
+
+        // Init DirectX Manager
+
+        
+        if (success)
+        {
+            std::cout << "Failed to initialize DirectX instances" << std::endl;
+            // Can see error 
+            Sleep(10000);
+            return;
+        }
 
         MainLoop();
     }
@@ -49,28 +63,7 @@ namespace EngineManager {
                 DispatchMessage(&msg);
             }
             else {
-                //return;
-                /*HRESULT hr = DirectInitializer::_commandAllocators[_frameIndex]->Reset();
-                if (FAILED(hr))
-                {
-                    
-                }*/
-                // Main loop logic
-                //    // initialize direct3d
-                //if (!InitD3D())
-                //{
-                //    MessageBox(0, L"Failed to initialize direct3d 12",
-                //        L"Error", MB_OK);
-                //    Cleanup();
-                //    return 1;
-                //}
-
-                //    // we want to wait for the gpu to finish executing the command list before we start releasing everything
-                //    WaitForPreviousFrame();
-
-                //// close the fence event
-                //CloseHandle(fenceEvent);
-                /*DirectInitializer::_commandList->Close();*/
+                DirectManager::Render();
             }
         }
     }

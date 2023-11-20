@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
 namespace DirectInitializer {
-    void Initialize();  
+    bool Initialize();  
+
+    void Destructor();
 
 
     // Get / Set 
@@ -32,13 +34,13 @@ namespace DirectInitializer {
     ID3D12GraphicsCommandList* GetCommandList();
 
     bool CreateFencesAndFenceEvent();
-    //ID3D12Fence* GetFence(int index);
-    //HANDLE GetFenceEvent();
+    ID3D12Fence* GetFence(int index);
+    HANDLE GetFenceEvent();
 
-    //UINT64 GetFenceValue(int index);
+    UINT64 GetFenceValue(int index);
 
-    //int GetFrameIndex();
-    //int GetRtvDescriptorSize();
+    int GetFrameIndex();
+    int GetRtvDescriptorSize();
 
 
     constexpr int _frameBufferCount = 3; // Nombre de tampons, 2 pour la double mise en mémoire tampon, 3 pour la triple mise en mémoire tampon

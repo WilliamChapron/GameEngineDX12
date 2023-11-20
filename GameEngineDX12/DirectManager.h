@@ -3,8 +3,8 @@
 
 namespace DirectManager {
     void InitializeDirectX();
-    void UpdateLogic();
-    void RenderScene();
-    void Cleanup();
-    void WaitForFrame();
+    void Update();
+    void UpdatePipeline();
+    void Render();
+    void WaitForPreviousFrame();
 }
