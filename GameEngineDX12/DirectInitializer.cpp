@@ -265,6 +265,7 @@ namespace DirectInitializer {
         for (int i = 0; i < _frameBufferCount; i++)
         {
             HRESULT hr = _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocators[i]));
+            //std::cout << "Le number :  " << i << std::endl;
             if (FAILED(hr) || _commandAllocators[i] == nullptr)
             {
                 std::cout << "Failed to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
@@ -276,7 +277,6 @@ namespace DirectInitializer {
                 std::cout << "Success to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
             }
         }
-        return true;
     }
 
     ID3D12CommandAllocator* DirectInitializer::GetCommandAllocator(int index) 

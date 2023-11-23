@@ -19,89 +19,122 @@ namespace DirectManager {
 
     void WaitForPreviousFrame()
     {
-        HRESULT hr;
-        int frameIndex = DirectInitializer::_frameIndex;
+        //HRESULT hr;
+        //int frameIndex = DirectInitializer::_frameIndex;
 
-        // swap the current rtv buffer index so we draw on the correct buffer
-        DirectInitializer::_frameIndex = DirectInitializer::_swapChain->GetCurrentBackBufferIndex();
+        //// swap the current rtv buffer index so we draw on the correct buffer
+        //DirectInitializer::_frameIndex = DirectInitializer::_swapChain->GetCurrentBackBufferIndex();
 
-        // if the current fence value is still less than "fenceValue", then we know the GPU has not finished executing
-        // the command queue since it has not reached the "commandQueue->Signal(fence, fenceValue)" command
-        if (DirectInitializer::_fences[frameIndex]->GetCompletedValue() < DirectInitializer::_fencesValue[frameIndex])
-        {
-            // we have the fence create an event which is signaled once the fence's current value is "fenceValue"
-            hr = DirectInitializer::_fences[frameIndex]->SetEventOnCompletion(DirectInitializer::_fencesValue[frameIndex], DirectInitializer::_fenceEvent);
-            if (FAILED(hr))
-            {
-                std::cout << "Failed To event Completion" << std::endl;
-                return;
-            }
+        //// if the current fence value is still less than "fenceValue", then we know the GPU has not finished executing
+        //// the command queue since it has not reached the "commandQueue->Signal(fence, fenceValue)" command
+        //if (DirectInitializer::_fences[frameIndex]->GetCompletedValue() < DirectInitializer::_fencesValue[frameIndex])
+        //{
+        //    // we have the fence create an event which is signaled once the fence's current value is "fenceValue"
+        //    hr = DirectInitializer::_fences[frameIndex]->SetEventOnCompletion(DirectInitializer::_fencesValue[frameIndex], DirectInitializer::_fenceEvent);
+        //    if (FAILED(hr))
+        //    {
+        //        std::cout << "Failed To event Completion" << std::endl;
+        //        return;
+        //    }
 
-            // We will wait until the fence has triggered the event that its current value has reached "fenceValue".
-            // Once its value has reached "fenceValue", we know the command queue has finished executing
-            WaitForSingleObject(DirectInitializer::_fenceEvent, INFINITE);
-            std::cout << "WaitForPreviousFrame: Waited for GPU to finish" << std::endl;
-        }
-        else
-        {
-            std::cout << "WaitForPreviousFrame: GPU has already finished" << std::endl;
-        }
+        //    // We will wait until the fence has triggered the event that its current value has reached "fenceValue".
+        //    // Once its value has reached "fenceValue", we know the command queue has finished executing
+        //    WaitForSingleObject(DirectInitializer::_fenceEvent, INFINITE);
+        //    std::cout << "WaitForPreviousFrame: Waited for GPU to finish" << std::endl;
+        //}
+        //else
+        //{
+        //    std::cout << "WaitForPreviousFrame: GPU has already finished" << std::endl;
+        //}
 
-        // increment fenceValue for next frame
-        DirectInitializer::_fencesValue[frameIndex]++;
+        //// increment fenceValue for next frame
+        //DirectInitializer::_fencesValue[frameIndex]++;
     }
 
 
     void UpdatePipeline()
     {
+        Sleep(3000);
         HRESULT hr;
-        CD3DX12_RESOURCE_BARRIER transitionBarrier;
+        //CD3DX12_RESOURCE_BARRIER transitionBarrier;
 
-        int frameIndex = DirectInitializer::_frameIndex;
-        std::cout << "frameindex" << frameIndex << std::endl;
-        DirectManager::WaitForPreviousFrame();
-        /*std::cout << frameIndex << std::endl;*/
+        //int frameIndex = DirectInitializer::_frameIndex;
+        //std::cout << "frameindex" << frameIndex << std::endl;
+        ///*DirectManager::WaitForPreviousFrame();*/
+        ///*std::cout << frameIndex << std::endl;*/
 
-        // we want to wait for the gpu to finish executing the command list before we start releasing everything
+        //// we want to wait for the gpu to finish executing the command list before we start releasing everything
 
-        if (frameIndex < 0 || frameIndex >= DirectInitializer::_frameBufferCount)
+        //if (frameIndex < 0 || frameIndex >= DirectInitializer::_frameBufferCount)
+        //{
+        //    std::cout << "UpdatePipeline: Invalid frameIndex: " << frameIndex << std::endl;
+        //    return;
+        //}
+
+        //// Vérifier la validité de Command Allocator
+        //if (DirectInitializer::_commandAllocators[frameIndex] == nullptr)
+        //{
+        //    std::cout << "UpdatePipeline: Command Allocator is nullptr for frameIndex: " << frameIndex << std::endl;
+        //    return;
+        //}
+
+        /*std::cout << "Size of _commandAllocators after: " << DirectInitializer::_commandAllocators.size() << std::endl;*/
+
+        HRESULT hrr;
+        for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
         {
-            std::cout << "UpdatePipeline: Invalid frameIndex: " << frameIndex << std::endl;
-            return;
+            hrr  = DirectInitializer::_commandAllocators[i]->Reset();
+            if (FAILED(hrr) || static_cast<ID3D12CommandAllocator*>(DirectInitializer::_commandAllocators[i]) == nullptr)
+            {
+                
+                // Afficher un message détaillé sur l'erreur
+                LPVOID errorMsg;
+                FormatMessage(
+                    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                    NULL,
+                    hrr,
+                    0, // Default language
+                    (LPWSTR)&errorMsg,
+                    0,
+                    NULL
+                );
+
+                std::wcout << L"Failed to reset Command Allocator. Error code: " << hrr << L" - " << (LPWSTR)errorMsg << std::endl;
+
+                LocalFree(errorMsg);
+
+            }
+            if (SUCCEEDED(hrr) && static_cast<ID3D12CommandAllocator*>(DirectInitializer::_commandAllocators[i]) != nullptr) {
+                std::cout << "Success To Reset Command Allocator" << std::endl;
+                std::cout << static_cast<ID3D12CommandAllocator*>(DirectInitializer::_commandAllocators[i]) << std::endl;
+            }
         }
 
-        // Vérifier la validité de Command Allocator
-        if (DirectInitializer::_commandAllocators[frameIndex] == nullptr)
-        {
-            std::cout << "UpdatePipeline: Command Allocator is nullptr for frameIndex: " << frameIndex << std::endl;
-            return;
-        }
 
+        //hr = DirectInitializer::_commandAllocators[0]->Reset();
+        //if (FAILED(hr))
+        //{
+        //    // Afficher un message détaillé sur l'erreur
+        //    LPVOID errorMsg;
+        //    FormatMessage(
+        //        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        //        NULL,
+        //        hr,
+        //        0, // Default language
+        //        (LPWSTR)&errorMsg,
+        //        0,
+        //        NULL
+        //    );
 
-        hr = DirectInitializer::_commandAllocators[frameIndex]->Reset();
-        if (FAILED(hr))
-        {
-            // Afficher un message détaillé sur l'erreur
-            LPVOID errorMsg;
-            FormatMessage(
-                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                NULL,
-                hr,
-                0, // Default language
-                (LPWSTR)&errorMsg,
-                0,
-                NULL
-            );
+        //    std::wcout << L"Failed to reset Command Allocator. Error code: " << hr << L" - " << (LPWSTR)errorMsg << std::endl;
 
-            std::wcout << L"Failed to reset Command Allocator. Error code: " << hr << L" - " << (LPWSTR)errorMsg << std::endl;
+        //    LocalFree(errorMsg);
 
-            LocalFree(errorMsg);
-
-            return;
-        }
-        if (SUCCEEDED(hr)) {
-            std::cout << "Success To Reset Command Allocator" << std::endl;
-        }
+        //    return;
+        //}
+        //if (SUCCEEDED(hr)) {
+        //    std::cout << "Success To Reset Command Allocator" << std::endl;
+        //}
 
 
 
@@ -144,9 +177,9 @@ namespace DirectManager {
 
     void Render() 
     {
-        HRESULT hr;
+        /*HRESULT hr;
 
-        int frameIndex = DirectInitializer::_frameIndex;
+        int frameIndex = DirectInitializer::_frameIndex;*/
 
         UpdatePipeline(); // update the pipeline by sending commands to the commandqueue
 
