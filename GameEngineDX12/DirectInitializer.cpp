@@ -11,12 +11,12 @@ namespace DirectInitializer {
     IDXGISwapChain3* _swapChain = nullptr;
     ID3D12CommandQueue* _commandQueue = nullptr;
     ID3D12DescriptorHeap* _rtvDescriptorHeap = nullptr;
-    ID3D12Resource* _renderTargets[_frameBufferCount];
-    ID3D12CommandAllocator* _commandAllocators[_frameBufferCount];
+    std::vector<RenderTarget> _renderTargets(_frameBufferCount);
+    std::vector<CommandAllocator> _commandAllocators(_frameBufferCount);
     ID3D12GraphicsCommandList* _commandList = nullptr;
-    ID3D12Fence* _fences[_frameBufferCount];
+    std::vector<Fence> _fences(_frameBufferCount);
     HANDLE _fenceEvent = nullptr;
-    UINT64 _fencesValue[_frameBufferCount];
+    std::vector<UINT64> _fencesValue(_frameBufferCount);
     int _frameIndex = 0;
     int _rtvDescriptorSize = 0;
 
@@ -27,10 +27,8 @@ namespace DirectInitializer {
 
 
     bool DirectInitializer::Initialize() {
-        for (int i = 0; i < _frameBufferCount; ++i) {
-            _renderTargets[i] = nullptr;
-            _commandAllocators[i] = nullptr;
-        }
+        DirectInitializer::_renderTargets = std::vector<RenderTarget>(_frameBufferCount, { nullptr, false });
+        DirectInitializer::_commandAllocators = std::vector<CommandAllocator>(_frameBufferCount, { nullptr, false });
 
 
         // If one instance don't init correctly, end program
@@ -228,21 +226,20 @@ namespace DirectInitializer {
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()); 
 
-        for (int i = 0; i < _frameBufferCount; i++)
-        {
-            HRESULT hr = _swapChain->GetBuffer(i, IID_PPV_ARGS(&_renderTargets[i]));
+        for (int i = 0; i < _frameBufferCount; i++) {
+            HRESULT hr = DirectInitializer::_swapChain->GetBuffer(i, IID_PPV_ARGS(&_renderTargets[i].resource));
 
-            if (_renderTargets[i] == nullptr || FAILED(hr))
-            {
+            if (_renderTargets[i].resource == nullptr || FAILED(hr)) {
+                std::cout << "Failed to create the Render Target number " << i + 1 << " on " << _frameBufferCount << std::endl;
                 return false;
-                std::cout << "Failed to create the Render Target number " << i+1 << " on " << _frameBufferCount  << std::endl;
-            }
-            if (_renderTargets[i] != nullptr && SUCCEEDED(hr))
-            {
-                std::cout << "Success to create the Render Target number " << i+1 << " on " << _frameBufferCount << std::endl;
             }
 
-            _device->CreateRenderTargetView(_renderTargets[i], nullptr, rtvHandle);
+            if (_renderTargets[i].resource != nullptr && SUCCEEDED(hr)) {
+                std::cout << "Success to create the Render Target number " << i + 1 << " on " << _frameBufferCount << std::endl;
+                _renderTargets[i].isActive = true;
+            }
+
+            DirectInitializer::_device->CreateRenderTargetView(_renderTargets[i].resource, nullptr, rtvHandle);
 
             rtvHandle.Offset(1, _rtvDescriptorSize);
         }
@@ -257,37 +254,35 @@ namespace DirectInitializer {
 
     ID3D12Resource* DirectInitializer::GetRenderTarget(int index)
     {
-        return _renderTargets[index];
+        return _renderTargets[index].resource;
     }
 
     bool DirectInitializer::CreateCommandAllocators() 
     {
-        for (int i = 0; i < _frameBufferCount; i++)
-        {
-            HRESULT hr = _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocators[i]));
-            //std::cout << "Le number :  " << i << std::endl;
-            if (FAILED(hr) || _commandAllocators[i] == nullptr)
-            {
-                std::cout << "Failed to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
-                return false;
+        for (int i = 0; i < _frameBufferCount; i++) {
+            HRESULT hr = DirectInitializer::_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocators[i].allocator));
 
+            if (FAILED(hr) || _commandAllocators[i].allocator == nullptr) {
+                std::cout << "Failed to create the Command Allocator number " << i + 1 << " on " << _frameBufferCount << std::endl;
+                return false;
             }
-            if (SUCCEEDED(hr) && _commandAllocators[i] != nullptr)
-            {
-                std::cout << "Success to create the Command Allocators number " << i + 1 << " on " << _frameBufferCount << std::endl;
+
+            if (SUCCEEDED(hr) && _commandAllocators[i].allocator != nullptr) {
+                std::cout << "Success to create the Command Allocator number " << i + 1 << " on " << _frameBufferCount << std::endl;
+                _commandAllocators[i].isActive = true;
             }
         }
     }
 
     ID3D12CommandAllocator* DirectInitializer::GetCommandAllocator(int index) 
     {
-        return _commandAllocators[index];
+        return _commandAllocators[index].allocator;
     }
 
     
     bool DirectInitializer::CreateCommandList() 
     {
-        HRESULT hr = _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocators[0], NULL, IID_PPV_ARGS(&_commandList));
+        HRESULT hr = _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocators[0].allocator, NULL, IID_PPV_ARGS(&_commandList));
         if (FAILED(hr) || _commandList == nullptr)
         {
             std::cout << "Failed to create the Command List"<< std::endl;
@@ -308,20 +303,20 @@ namespace DirectInitializer {
 
     bool CreateFencesAndFenceEvent() 
     {
-        for (int i = 0; i < _frameBufferCount; i++)
-        {
-            HRESULT hr = _device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fences[i]));
-            if (FAILED(hr) || _fences[i] == nullptr)
-            {
+        for (int i = 0; i < _frameBufferCount; i++) {
+            HRESULT hr = DirectInitializer::_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fences[i].fence));
+
+            if (FAILED(hr) || _fences[i].fence == nullptr) {
                 std::cout << "Failed to create the Fence number " << i + 1 << " on " << _frameBufferCount << std::endl;
                 return false;
+            }
 
-            }
-            if (SUCCEEDED(hr) || _fences[i] != nullptr)
-            {
+            if (SUCCEEDED(hr) && _fences[i].fence != nullptr) {
                 std::cout << "Success to create the Fence number " << i + 1 << " on " << _frameBufferCount << std::endl;
+
+                _fences[i].isActive = true; 
+                _fencesValue[i] = 0; 
             }
-            _fencesValue[i] = 0; // set the initial fence value to 0
         }
 
         // create a handle to a fence event from WIN API 
@@ -341,7 +336,7 @@ namespace DirectInitializer {
 
     ID3D12Fence* DirectInitializer::GetFence(int index) 
     {
-        return _fences[index];
+        return _fences[index].fence;
     }
 
     HANDLE DirectInitializer::GetFenceEvent() 

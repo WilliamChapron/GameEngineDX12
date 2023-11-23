@@ -61,54 +61,38 @@ namespace DirectManager {
         //int frameIndex = DirectInitializer::_frameIndex;
         //std::cout << "frameindex" << frameIndex << std::endl;
         ///*DirectManager::WaitForPreviousFrame();*/
-        ///*std::cout << frameIndex << std::endl;*/
-
-        //// we want to wait for the gpu to finish executing the command list before we start releasing everything
-
-        //if (frameIndex < 0 || frameIndex >= DirectInitializer::_frameBufferCount)
-        //{
-        //    std::cout << "UpdatePipeline: Invalid frameIndex: " << frameIndex << std::endl;
-        //    return;
-        //}
-
-        //// Vérifier la validité de Command Allocator
-        //if (DirectInitializer::_commandAllocators[frameIndex] == nullptr)
-        //{
-        //    std::cout << "UpdatePipeline: Command Allocator is nullptr for frameIndex: " << frameIndex << std::endl;
-        //    return;
-        //}
-
-        /*std::cout << "Size of _commandAllocators after: " << DirectInitializer::_commandAllocators.size() << std::endl;*/
+        
 
         HRESULT hrr;
-        for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
-        {
-            hrr  = DirectInitializer::_commandAllocators[i]->Reset();
-            if (FAILED(hrr) || static_cast<ID3D12CommandAllocator*>(DirectInitializer::_commandAllocators[i]) == nullptr)
-            {
-                
-                // Afficher un message détaillé sur l'erreur
-                LPVOID errorMsg;
-                FormatMessage(
-                    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                    NULL,
-                    hrr,
-                    0, // Default language
-                    (LPWSTR)&errorMsg,
-                    0,
-                    NULL
-                );
 
-                std::wcout << L"Failed to reset Command Allocator. Error code: " << hrr << L" - " << (LPWSTR)errorMsg << std::endl;
-
-                LocalFree(errorMsg);
-
+        for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i) {
+            if (DirectInitializer::_commandAllocators[i+1].isActive) {
+                std::cout << "isActive is true for Command Allocator number " << i + 1 << " on " << DirectInitializer::_frameBufferCount << std::endl;
             }
-            if (SUCCEEDED(hrr) && static_cast<ID3D12CommandAllocator*>(DirectInitializer::_commandAllocators[i]) != nullptr) {
-                std::cout << "Success To Reset Command Allocator" << std::endl;
-                std::cout << static_cast<ID3D12CommandAllocator*>(DirectInitializer::_commandAllocators[i]) << std::endl;
+            else {
+                std::cout << "isActive is false for Command Allocator number " << i + 1 << " on " << DirectInitializer::_frameBufferCount << std::endl;
             }
-        }
+        }        //for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
+        //{
+        //    std::string extractedTypeName;
+        //    const char* rawTypeName = typeid(DirectInitializer::_commandAllocators[4]).name();
+        //    const char* asteriskPosition = std::strchr(rawTypeName, '*');
+
+        //    if (asteriskPosition != nullptr) {
+        //        // Calcul de la longueur de la sous-chaîne avant le caractère '*'
+        //        size_t lengthBeforeAsterisk = static_cast<size_t>(asteriskPosition - rawTypeName);
+
+        //        // Extraction de la sous-chaîne avant le caractère '*'
+        //        extractedTypeName = std::string(rawTypeName, lengthBeforeAsterisk);
+        //    }
+
+
+        //    
+        //    const std::type_info& targetType = typeid(ID3D12CommandAllocator);
+        //    std::cout <<  targetType.name() << " ----" << extractedTypeName << std::endl;
+
+
+        
 
 
         //hr = DirectInitializer::_commandAllocators[0]->Reset();
@@ -227,9 +211,9 @@ namespace DirectManager {
 
         for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
         {
-            SAFE_RELEASE(DirectInitializer::_renderTargets[i]);
-            SAFE_RELEASE(DirectInitializer::_commandAllocators[i]);
-            SAFE_RELEASE(DirectInitializer::_fences[i]);
+            SAFE_RELEASE(DirectInitializer::_renderTargets[i].resource);
+            SAFE_RELEASE(DirectInitializer::_commandAllocators[i].allocator);
+            SAFE_RELEASE(DirectInitializer::_fences[i].fence);
         };
     }
 }
