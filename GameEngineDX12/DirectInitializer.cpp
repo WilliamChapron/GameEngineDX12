@@ -3,7 +3,6 @@
 #include "EngineManager.h"
 #include <iostream>
 
-
 namespace DirectInitializer {
     IDXGIAdapter1* _dxgiAdapter = nullptr;
     IDXGIFactory4* _dxgiFactory = nullptr;
@@ -13,6 +12,7 @@ namespace DirectInitializer {
     ID3D12DescriptorHeap* _rtvDescriptorHeap = nullptr;
     std::vector<RenderTarget> _renderTargets(_frameBufferCount);
     std::vector<CommandAllocator> _commandAllocators(_frameBufferCount);
+    ID3D12CommandAllocator* _commandAllocator;
     ID3D12GraphicsCommandList* _commandList = nullptr;
     std::vector<Fence> _fences(_frameBufferCount);
     HANDLE _fenceEvent = nullptr;
@@ -272,6 +272,21 @@ namespace DirectInitializer {
                 _commandAllocators[i].isActive = true;
             }
         }
+
+
+        HRESULT hr = DirectInitializer::_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocator));
+
+        if (FAILED(hr) || _commandAllocator == nullptr) {
+            std::cout << "Failed to create the Command Allocator TTTT " << _frameBufferCount << std::endl;
+            return false;
+        }
+
+        if (SUCCEEDED(hr) && _commandAllocator != nullptr) {
+            std::cout << "Success to create the Command Allocator TTTT  " << _frameBufferCount << std::endl;
+        }
+
+        return true;
+
     }
 
     ID3D12CommandAllocator* DirectInitializer::GetCommandAllocator(int index) 
@@ -330,6 +345,7 @@ namespace DirectInitializer {
         {
             std::cout << "Success to create the Fence Event" << std::endl;
         }
+
 
         return true;
     }

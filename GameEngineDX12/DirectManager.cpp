@@ -65,6 +65,24 @@ namespace DirectManager {
 
         HRESULT hrr;
 
+        HRESULT dhr = DirectInitializer::_commandAllocator->Reset();
+        if (FAILED(dhr))
+        {
+            if (FACILITY_WINDOWS == HRESULT_FACILITY(dhr))
+                dhr = HRESULT_CODE(dhr);
+
+            TCHAR* szErrMsg;
+            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dhr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&szErrMsg, 0, NULL) != 0)
+            {
+                std::wcout << L"Failed to reset Command Allocator. Error code: " << dhr << L" - " << (LPWSTR)szErrMsg << std::endl;
+                LocalFree(szErrMsg);
+            }
+        }
+
+        if (SUCCEEDED(dhr)) {
+            std::cout << "Success To Reset Command Allocator" << std::endl;
+        }
+
         /*for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i) {
             if (DirectInitializer::_commandAllocators[i].isActive) {
                 std::cout << "isActive is true for Command Allocator number " << i + 1 << " on " << DirectInitializer::_frameBufferCount << std::endl;

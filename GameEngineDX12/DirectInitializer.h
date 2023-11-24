@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+
+
 namespace DirectInitializer {
 
     struct RenderTarget {
@@ -10,6 +12,10 @@ namespace DirectInitializer {
     struct CommandAllocator {
         ID3D12CommandAllocator* allocator;
         bool isActive;
+    };
+
+    struct AStruct {
+        bool* b;
     };
 
     struct Fence {
@@ -70,6 +76,7 @@ namespace DirectInitializer {
     extern ID3D12DescriptorHeap* _rtvDescriptorHeap;
     extern std::vector<RenderTarget> _renderTargets;
     extern std::vector<CommandAllocator> _commandAllocators;
+    extern ID3D12CommandAllocator* _commandAllocator;
     extern ID3D12GraphicsCommandList* _commandList;
     extern std::vector<Fence> _fences;
     extern int _frameIndex;

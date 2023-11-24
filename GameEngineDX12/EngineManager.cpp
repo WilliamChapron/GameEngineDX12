@@ -64,7 +64,7 @@ namespace EngineManager {
             }
             else {
                 
-                /*DirectManager::Render();*/
+                DirectManager::Render();
                 Sleep(1000);
             }
         }
