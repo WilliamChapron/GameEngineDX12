@@ -63,7 +63,8 @@ namespace EngineManager {
                 DispatchMessage(&msg);
             }
             else {
-                DirectManager::Render();
+                
+                /*DirectManager::Render();*/
                 Sleep(1000);
             }
         }

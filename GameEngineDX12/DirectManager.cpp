@@ -65,14 +65,45 @@ namespace DirectManager {
 
         HRESULT hrr;
 
-        for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i) {
-            if (DirectInitializer::_commandAllocators[i+1].isActive) {
+        /*for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i) {
+            if (DirectInitializer::_commandAllocators[i].isActive) {
                 std::cout << "isActive is true for Command Allocator number " << i + 1 << " on " << DirectInitializer::_frameBufferCount << std::endl;
             }
             else {
                 std::cout << "isActive is false for Command Allocator number " << i + 1 << " on " << DirectInitializer::_frameBufferCount << std::endl;
             }
-        }        //for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
+        }    */
+        
+        //std::cout << DirectInitializer::_commandAllocators[0].isActive << std::endl;
+        //hr = DirectInitializer::_commandAllocators[0].allocator->Reset();
+        //if (FAILED(hr))
+        //{
+        //    // Afficher un message détaillé sur l'erreur
+        //    LPVOID errorMsg;
+        //    FormatMessage(
+        //        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        //        NULL,
+        //        hr,
+        //        0, // Default language
+        //        (LPWSTR)&errorMsg,
+        //        0,
+        //        NULL
+        //    );
+
+        //    std::wcout << L"Failed to reset Command Allocator. Error code: " << hr << L" - " << (LPWSTR)errorMsg << std::endl;
+
+        //    LocalFree(errorMsg);
+
+        //    //return;
+        //}
+        //if (SUCCEEDED(hr)) {
+        //    std::cout << "Success To Reset Command Allocator" << std::endl;
+        //}
+
+        
+        
+        
+        //for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
         //{
         //    std::string extractedTypeName;
         //    const char* rawTypeName = typeid(DirectInitializer::_commandAllocators[4]).name();
@@ -95,30 +126,6 @@ namespace DirectManager {
         
 
 
-        //hr = DirectInitializer::_commandAllocators[0]->Reset();
-        //if (FAILED(hr))
-        //{
-        //    // Afficher un message détaillé sur l'erreur
-        //    LPVOID errorMsg;
-        //    FormatMessage(
-        //        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        //        NULL,
-        //        hr,
-        //        0, // Default language
-        //        (LPWSTR)&errorMsg,
-        //        0,
-        //        NULL
-        //    );
-
-        //    std::wcout << L"Failed to reset Command Allocator. Error code: " << hr << L" - " << (LPWSTR)errorMsg << std::endl;
-
-        //    LocalFree(errorMsg);
-
-        //    return;
-        //}
-        //if (SUCCEEDED(hr)) {
-        //    std::cout << "Success To Reset Command Allocator" << std::endl;
-        //}
 
 
 
