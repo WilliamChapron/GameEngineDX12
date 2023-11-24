@@ -54,7 +54,7 @@ namespace DirectManager {
 
     void UpdatePipeline()
     {
-        Sleep(3000);
+        Sleep(1000);
         HRESULT hr;
         //CD3DX12_RESOURCE_BARRIER transitionBarrier;
 
@@ -63,25 +63,9 @@ namespace DirectManager {
         ///*DirectManager::WaitForPreviousFrame();*/
         
 
-        HRESULT hrr;
 
-        HRESULT dhr = DirectInitializer::_commandAllocator->Reset();
-        if (FAILED(dhr))
-        {
-            if (FACILITY_WINDOWS == HRESULT_FACILITY(dhr))
-                dhr = HRESULT_CODE(dhr);
 
-            TCHAR* szErrMsg;
-            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dhr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&szErrMsg, 0, NULL) != 0)
-            {
-                std::wcout << L"Failed to reset Command Allocator. Error code: " << dhr << L" - " << (LPWSTR)szErrMsg << std::endl;
-                LocalFree(szErrMsg);
-            }
-        }
-
-        if (SUCCEEDED(dhr)) {
-            std::cout << "Success To Reset Command Allocator" << std::endl;
-        }
+        
 
         /*for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i) {
             if (DirectInitializer::_commandAllocators[i].isActive) {
@@ -215,30 +199,35 @@ namespace DirectManager {
         //}
     }
 
-    void Cleanup()
-    {
-        // wait for the gpu to finish all frames
-        for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
-        {
-            DirectInitializer::_frameIndex = i;
-            WaitForPreviousFrame();
-        }
+    //void Cleanup()
+    //{
+    //    // wait for the gpu to finish all frames
+    //    for (int i = 0; i < 3; ++i)
+    //    {
+    //        DirectInitializer::_frameIndex = i;
+    //        WaitForPreviousFrame();
+    //    }
 
-        // get swapchain out of full screen before exiting
-        BOOL fs = false;
-        if (DirectInitializer::_swapChain->GetFullscreenState(&fs, NULL)) DirectInitializer::_swapChain->SetFullscreenState(false, NULL);
+    //    // get swapchain out of full screen before exiting
+    //    BOOL fs = false;
+    //    if (DirectInitializer::_swapChain->GetFullscreenState(&fs, NULL)) DirectInitializer::_swapChain->SetFullscreenState(false, NULL);
 
-        SAFE_RELEASE(DirectInitializer::_device);
-        SAFE_RELEASE(DirectInitializer::_swapChain);
-        SAFE_RELEASE(DirectInitializer::_commandQueue);
-        SAFE_RELEASE(DirectInitializer::_rtvDescriptorHeap);
-        SAFE_RELEASE(DirectInitializer::_commandList);
+    //    SAFE_RELEASE(DirectInitializer::_device);
+    //    SAFE_RELEASE(DirectInitializer::_swapChain);
+    //    SAFE_RELEASE(DirectInitializer::_commandQueue);
+    //    SAFE_RELEASE(DirectInitializer::_rtvDescriptorHeap);
+    //    SAFE_RELEASE(DirectInitializer::_commandList);
 
-        for (int i = 0; i < DirectInitializer::_frameBufferCount; ++i)
-        {
-            SAFE_RELEASE(DirectInitializer::_renderTargets[i].resource);
-            SAFE_RELEASE(DirectInitializer::_commandAllocators[i].allocator);
-            SAFE_RELEASE(DirectInitializer::_fences[i].fence);
-        };
-    }
+    //    SAFE_RELEASE(DirectInitializer::_firstRenderTarget.resource);
+    //    SAFE_RELEASE(DirectInitializer::_firstCommandAllocator.allocator);
+    //    SAFE_RELEASE(DirectInitializer::_firstFence.fence);
+
+    //    SAFE_RELEASE(DirectInitializer::_secondRenderTarget.resource);
+    //    SAFE_RELEASE(DirectInitializer::_secondCommandAllocator.allocator);
+    //    SAFE_RELEASE(DirectInitializer::_secondFence.fence);
+
+    //    SAFE_RELEASE(DirectInitializer::_thirdRenderTarget.resource);
+    //    SAFE_RELEASE(DirectInitializer::_thirdCommandAllocator.allocator);
+    //    SAFE_RELEASE(DirectInitializer::_thirdFence.fence);
+    //}
 }

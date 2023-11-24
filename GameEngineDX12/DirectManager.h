@@ -6,6 +6,6 @@ namespace DirectManager {
     void Update();
     void UpdatePipeline();
     void Render();
-    void Cleanup();
+    //void Cleanup();
     void WaitForPreviousFrame();
 }

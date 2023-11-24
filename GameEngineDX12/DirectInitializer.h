@@ -14,10 +14,6 @@ namespace DirectInitializer {
         bool isActive;
     };
 
-    struct AStruct {
-        bool* b;
-    };
-
     struct Fence {
         ID3D12Fence* fence;
         bool isActive;
@@ -74,16 +70,22 @@ namespace DirectInitializer {
     extern IDXGISwapChain3* _swapChain;
     extern ID3D12CommandQueue* _commandQueue;
     extern ID3D12DescriptorHeap* _rtvDescriptorHeap;
-    extern std::vector<RenderTarget> _renderTargets;
-    extern std::vector<CommandAllocator> _commandAllocators;
-    extern ID3D12CommandAllocator* _commandAllocator;
+    extern RenderTarget _firstRenderTarget;
+    extern RenderTarget _secondRenderTarget;
+    extern RenderTarget _thirdRenderTarget;
+    extern CommandAllocator _firstCommandAllocator;
+    extern CommandAllocator _secondCommandAllocator;
+    extern CommandAllocator _thirdCommandAllocator;
     extern ID3D12GraphicsCommandList* _commandList;
-    extern std::vector<Fence> _fences;
+    extern Fence _firstFence;
+    extern Fence _secondFence;
+    extern Fence _thirdFence;
     extern int _frameIndex;
     extern int _rtvDescriptorSize;
-
-    extern HANDLE _fenceEvent; 
-    extern std::vector<UINT64> _fencesValue; 
+    extern HANDLE _fenceEvent;
+    extern UINT64 _firstFenceValue;
+    extern UINT64 _secondFenceValue;
+    extern UINT64 _thirdFenceValue;
 
 
 };
