@@ -62,6 +62,9 @@
     <ClCompile Include="DirectManager.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="oldmain.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GameEngineDX12.rc">

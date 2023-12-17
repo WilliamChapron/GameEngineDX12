@@ -38,9 +38,7 @@ namespace DirectInitializer {
 
 
 
-        _firstCommandAllocator = { nullptr, false };
-        _secondCommandAllocator = { nullptr, false };
-        _thirdCommandAllocator = { nullptr, false };
+
 
 
         // If one instance don't init correctly, end program
@@ -317,6 +315,7 @@ namespace DirectInitializer {
     bool DirectInitializer::CreateCommandAllocators() {
 
 
+        _firstCommandAllocator = { nullptr, false };
 
         HRESULT hr = DirectInitializer::_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_firstCommandAllocator.allocator));
 
@@ -328,6 +327,8 @@ namespace DirectInitializer {
         std::cout << "Success to create the first Command Allocator." << std::endl;
         _firstCommandAllocator.isActive = true;
 
+        _secondCommandAllocator = { nullptr, false };
+
         HRESULT hrr = DirectInitializer::_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_secondCommandAllocator.allocator));
 
         if (FAILED(hrr) || _secondCommandAllocator.allocator == nullptr) {
@@ -337,6 +338,8 @@ namespace DirectInitializer {
 
         std::cout << "Success to create the second Command Allocator." << std::endl;
         _secondCommandAllocator.isActive = true;
+
+        _thirdCommandAllocator = { nullptr, false };
 
         HRESULT hrrr = DirectInitializer::_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_thirdCommandAllocator.allocator));
 

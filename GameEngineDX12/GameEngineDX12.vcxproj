@@ -153,6 +153,7 @@
     <ClCompile Include="DirectManager.cpp" />
     <ClCompile Include="EngineManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="oldmain.cpp" />
     <ClCompile Include="WindowInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
